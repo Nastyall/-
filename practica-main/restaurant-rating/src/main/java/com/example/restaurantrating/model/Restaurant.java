@@ -42,7 +42,7 @@ public class Restaurant {
     private BigDecimal sumRatings;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Rating> ratings = new ArrayList<>();
+    private List<Review> reviews = new ArrayList<>();
 
     public Restaurant(Long id, String name, String description, CuisineType cuisineType,
                       BigDecimal averageBill, BigDecimal averageRating) {

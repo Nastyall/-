@@ -2,6 +2,7 @@ package com.example.restaurantrating.service;
 
 import com.example.restaurantrating.dto.RestaurantRequestDTO;
 import com.example.restaurantrating.dto.RestaurantResponseDTO;
+import com.example.restaurantrating.exception.BadRequestException;
 import com.example.restaurantrating.model.CuisineType;
 import com.example.restaurantrating.model.Restaurant;
 import com.example.restaurantrating.repository.RestaurantRepository;
@@ -25,7 +26,7 @@ public class RestaurantService {
         try {
             cuisineType = CuisineType.valueOf(request.cuisineType().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Некорректный тип кухни. Доступные: ITALIAN, CHINESE, JAPANESE, RUSSIAN, FRENCH");
+            throw new BadRequestException("Некорректный тип кухни. Доступные: ITALIAN, CHINESE, JAPANESE, RUSSIAN, FRENCH");
         }
 
         Restaurant restaurant = new Restaurant();
@@ -49,7 +50,7 @@ public class RestaurantService {
         try {
             cuisineType = CuisineType.valueOf(request.cuisineType().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Некорректный тип кухни");
+            throw new BadRequestException("Некорректный тип кухни");
         }
 
         restaurant.setName(request.name());
@@ -61,12 +62,10 @@ public class RestaurantService {
         return toResponseDTO(updated);
     }
 
-    public boolean deleteRestaurant(Long id) {
-        if (restaurantRepository.existsById(id)) {
-            restaurantRepository.deleteById(id);
-            return true;
-        }
-        return false;
+    public void deleteRestaurant(Long id) {
+        Restaurant restaurant = restaurantRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ресторан с ID " + id + " не найден"));
+        restaurantRepository.delete(restaurant);
     }
 
     public List<RestaurantResponseDTO> getAllRestaurants() {

@@ -2,11 +2,8 @@ package com.example.restaurantrating.controller;
 
 import com.example.restaurantrating.dto.UserRequestDTO;
 import com.example.restaurantrating.dto.UserResponseDTO;
-import com.example.restaurantrating.service.VisitorService;
+import com.example.restaurantrating.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,52 +17,37 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Посетители", description = "Управление посетителями ресторанов")
 public class UserController {
-    private final VisitorService visitorService;
+    private final UserService userService;
 
     @PostMapping
     @Operation(summary = "Создать нового посетителя")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Посетитель успешно создан"),
-            @ApiResponse(responseCode = "400", description = "Некорректные данные")
-    })
     public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO request) {
-        UserResponseDTO user = visitorService.createUser(request);
+        UserResponseDTO user = userService.createUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @GetMapping
     @Operation(summary = "Получить всех посетителей")
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        return ResponseEntity.ok(visitorService.getAllUsers());
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Получить посетителя по ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Посетитель найден"),
-            @ApiResponse(responseCode = "404", description = "Посетитель не найден")
-    })
-    public ResponseEntity<UserResponseDTO> getUserById(
-            @Parameter(description = "ID посетителя", required = true)
-            @PathVariable Long id) {
-        return ResponseEntity.ok(visitorService.getUserById(id));
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Обновить данные посетителя")
-    public ResponseEntity<UserResponseDTO> updateUser(
-            @PathVariable Long id,
-            @Valid @RequestBody UserRequestDTO request) {
-        return ResponseEntity.ok(visitorService.updateUser(id, request));
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequestDTO request) {
+        return ResponseEntity.ok(userService.updateUser(id, request));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Удалить посетителя")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        boolean deleted = visitorService.deleteUser(id);
-        if (!deleted) {
-            return ResponseEntity.notFound().build();
-        }
+        userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 }

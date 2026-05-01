@@ -17,13 +17,11 @@ import java.util.List;
 @RequestMapping("/api/restaurants")
 @RequiredArgsConstructor
 @Tag(name = "Рестораны", description = "Управление ресторанами")
-@SuppressWarnings({"unused", "SpringJavaInjectionPointsAutowiringInspection"})
 public class RestaurantController {
     private final RestaurantService restaurantService;
 
     @PostMapping
     @Operation(summary = "Создать новый ресторан")
-    @SuppressWarnings("unused")
     public ResponseEntity<RestaurantResponseDTO> createRestaurant(@Valid @RequestBody RestaurantRequestDTO request) {
         RestaurantResponseDTO restaurant = restaurantService.createRestaurant(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(restaurant);
@@ -31,43 +29,39 @@ public class RestaurantController {
 
     @GetMapping
     @Operation(summary = "Получить все рестораны")
-    @SuppressWarnings("unused")
     public ResponseEntity<List<RestaurantResponseDTO>> getAllRestaurants() {
         return ResponseEntity.ok(restaurantService.getAllRestaurants());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Получить ресторан по ID")
-    @SuppressWarnings("unused")
-    public ResponseEntity<RestaurantResponseDTO> getRestaurantById(@PathVariable @SuppressWarnings("unused") Long id) {
+    public ResponseEntity<RestaurantResponseDTO> getRestaurantById(@PathVariable Long id) {
         return ResponseEntity.ok(restaurantService.getRestaurantById(id));
     }
 
     @GetMapping("/search/by-rating")
     @Operation(summary = "Найти рестораны с оценкой не ниже заданной")
-    @SuppressWarnings("unused")
     public ResponseEntity<List<RestaurantResponseDTO>> getRestaurantsByMinRating(
-            @RequestParam @SuppressWarnings("unused") BigDecimal minRating) {
+            @RequestParam(required = false) BigDecimal minRating) {
         return ResponseEntity.ok(restaurantService.getRestaurantsWithMinRating(minRating));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Обновить данные ресторана")
-    @SuppressWarnings("unused")
     public ResponseEntity<RestaurantResponseDTO> updateRestaurant(
-            @PathVariable @SuppressWarnings("unused") Long id,
-            @Valid @RequestBody @SuppressWarnings("unused") RestaurantRequestDTO request) {
+            @PathVariable Long id,
+            @Valid @RequestBody RestaurantRequestDTO request) {
         return ResponseEntity.ok(restaurantService.updateRestaurant(id, request));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Удалить ресторан")
-    @SuppressWarnings("unused")
-    public ResponseEntity<Void> deleteRestaurant(@PathVariable @SuppressWarnings("unused") Long id) {
-        boolean deleted = restaurantService.deleteRestaurant(id);
-        if (!deleted) {
+    public ResponseEntity<Void> deleteRestaurant(@PathVariable Long id) {
+        try {
+            restaurantService.deleteRestaurant(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.noContent().build();
     }
 }

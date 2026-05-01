@@ -11,8 +11,8 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@IdClass(Rating.RatingId.class)
-public class Rating implements Serializable {
+@IdClass(Review.RatingId.class)
+public class Review implements Serializable {
 
     @Id
     private Long visitorId;
@@ -28,7 +28,7 @@ public class Rating implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "visitorId", referencedColumnName = "id", insertable = false, updatable = false)
-    private Visitor visitor;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurantId", referencedColumnName = "id", insertable = false, updatable = false)

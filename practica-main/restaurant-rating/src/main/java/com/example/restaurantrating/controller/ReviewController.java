@@ -2,7 +2,7 @@ package com.example.restaurantrating.controller;
 
 import com.example.restaurantrating.dto.ReviewRequestDTO;
 import com.example.restaurantrating.dto.ReviewResponseDTO;
-import com.example.restaurantrating.service.RatingService;
+import com.example.restaurantrating.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -21,19 +21,19 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Отзывы", description = "Управление отзывами и оценками")
 public class ReviewController {
-    private final RatingService ratingService;
+    private final ReviewService reviewService;
 
     @PostMapping
     @Operation(summary = "Создать новый отзыв")
     public ResponseEntity<ReviewResponseDTO> createReview(@Valid @RequestBody ReviewRequestDTO request) {
-        ReviewResponseDTO review = ratingService.createReview(request);
+        ReviewResponseDTO review = reviewService.createReview(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(review);
     }
 
     @GetMapping
     @Operation(summary = "Получить все отзывы")
     public ResponseEntity<List<ReviewResponseDTO>> getAllReviews() {
-        return ResponseEntity.ok(ratingService.getAllReviews());
+        return ResponseEntity.ok(reviewService.getAllReviews());
     }
 
     @GetMapping("/{visitorId}/{restaurantId}")
@@ -41,13 +41,13 @@ public class ReviewController {
     public ResponseEntity<ReviewResponseDTO> getReviewById(
             @PathVariable Long visitorId,
             @PathVariable Long restaurantId) {
-        return ResponseEntity.ok(ratingService.getReviewById(visitorId, restaurantId));
+        return ResponseEntity.ok(reviewService.getReviewById(visitorId, restaurantId));
     }
 
     @GetMapping("/restaurant/{restaurantId}")
     @Operation(summary = "Получить все отзывы ресторана")
     public ResponseEntity<List<ReviewResponseDTO>> getReviewsByRestaurant(@PathVariable Long restaurantId) {
-        return ResponseEntity.ok(ratingService.getReviewsByRestaurant(restaurantId));
+        return ResponseEntity.ok(reviewService.getReviewsByRestaurant(restaurantId));
     }
 
     @GetMapping("/restaurant/{restaurantId}/paged")
@@ -60,7 +60,7 @@ public class ReviewController {
             @RequestParam(defaultValue = "desc") String direction) {
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
-        return ResponseEntity.ok(ratingService.getReviewsByRestaurantPaged(restaurantId, pageable));
+        return ResponseEntity.ok(reviewService.getReviewsByRestaurantPaged(restaurantId, pageable));
     }
 
     @GetMapping("/restaurant/{restaurantId}/sorted")
@@ -68,13 +68,13 @@ public class ReviewController {
     public ResponseEntity<List<ReviewResponseDTO>> getReviewsByRestaurantSorted(
             @PathVariable Long restaurantId,
             @RequestParam(defaultValue = "desc") String order) {
-        return ResponseEntity.ok(ratingService.getReviewsByRestaurantSorted(restaurantId, order));
+        return ResponseEntity.ok(reviewService.getReviewsByRestaurantSorted(restaurantId, order));
     }
 
     @GetMapping("/user/{userId}")
     @Operation(summary = "Получить все отзывы посетителя")
     public ResponseEntity<List<ReviewResponseDTO>> getReviewsByUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(ratingService.getReviewsByUser(userId));
+        return ResponseEntity.ok(reviewService.getReviewsByUser(userId));
     }
 
     @PutMapping("/{visitorId}/{restaurantId}")
@@ -83,7 +83,7 @@ public class ReviewController {
             @PathVariable Long visitorId,
             @PathVariable Long restaurantId,
             @Valid @RequestBody ReviewRequestDTO request) {
-        return ResponseEntity.ok(ratingService.updateReview(visitorId, restaurantId, request));
+        return ResponseEntity.ok(reviewService.updateReview(visitorId, restaurantId, request));
     }
 
     @DeleteMapping("/{visitorId}/{restaurantId}")
@@ -91,7 +91,7 @@ public class ReviewController {
     public ResponseEntity<Void> deleteReview(
             @PathVariable Long visitorId,
             @PathVariable Long restaurantId) {
-        boolean deleted = ratingService.deleteReview(visitorId, restaurantId);
+        boolean deleted = reviewService.deleteReview(visitorId, restaurantId);
         if (!deleted) {
             return ResponseEntity.notFound().build();
         }
